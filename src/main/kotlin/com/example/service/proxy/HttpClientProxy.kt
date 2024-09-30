@@ -13,7 +13,7 @@ import io.ktor.http.*
  * */
 class HttpClientProxy : ProxyRequest<String> {
     private var apiUrl: String = ""
-
+    private val requestBuilder = HttpRequestBuilder()
     /**
      * Карта параметров
      * */
@@ -22,18 +22,23 @@ class HttpClientProxy : ProxyRequest<String> {
      * Добавляет API ключ к запросу
      * Важно! Ключ добавлен просто строкой для упрощения кода!
      * */
-
+    override fun apiKey(key: String){
+        requestBuilder.headers {
+            append("Authorization", "Token c81b424020fd4fa62e38a495d38076d3d8475c7e")
+        }
+    }
     /**
      * добавялет параметр в формате ключ-значение
      * @param key имя параметра
      * @param value значение параметра
      * */
     override fun addParameter(key: String, value: String) {
-        if (parameters[key] != null) {
-            parameters[key]!!.add(value)
-        } else {
-            parameters[key] = mutableListOf(value)
-        }
+        requestBuilder.parameter(key, value)
+//        if (parameters[key] != null) {
+//            parameters[key]!!.add(value)
+//        } else {
+//            parameters[key] = mutableListOf(value)
+//        }
     }
 
     /**
@@ -41,7 +46,8 @@ class HttpClientProxy : ProxyRequest<String> {
      * @param url url для запроса
      * */
     override fun url(url: String) {
-        apiUrl = url
+        requestBuilder.url(url)
+//        apiUrl = url
     }
 
     /**
@@ -50,19 +56,19 @@ class HttpClientProxy : ProxyRequest<String> {
      * @throws InvalidStatusException если запрос не будет успешен (HTTP 200), получим искключение
      * */
     override suspend fun get(): String {
-
-        val response = client.get(apiUrl) {
-            headers {
-                append("Authorization", "Token c81b424020fd4fa62e38a495d38076d3d8475c7e")
-            }
-            url {
-                this@HttpClientProxy.parameters.forEach { param ->
-                    param.value.forEach {
-                        parameters.append(param.key, it)
-                    }
-                }
-            }
-        }
+        val response = client.get(requestBuilder)
+//        val response = client.get(apiUrl) {
+//            headers {
+//                append("Authorization", "Token APIKEY")
+//            }
+//            url {
+//                this@HttpClientProxy.parameters.forEach { param ->
+//                    param.value.forEach {
+//                        parameters.append(param.key, it)
+//                    }
+//                }
+//            }
+//        }
         println(response.bodyAsText())
 
         if (response.status != HttpStatusCode.OK) {

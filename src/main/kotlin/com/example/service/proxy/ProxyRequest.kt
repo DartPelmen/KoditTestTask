@@ -11,4 +11,5 @@ interface ProxyRequest<T> {
     suspend fun get():T
     fun url(url: String)
     fun addParameter(key: String, value: String)
+    fun apiKey(key: String)
 }

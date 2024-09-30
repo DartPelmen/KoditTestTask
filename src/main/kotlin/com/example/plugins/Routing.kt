@@ -13,7 +13,9 @@ import io.ktor.server.response.*
 import io.ktor.server.routing.*
 
 fun Application.configureRouting() {
-    val proxyService = ProxyService(CacheService(), HttpClientProxy())
+    val httpClientProxy = HttpClientProxy()
+    httpClientProxy.apiKey("Token APIKEY")
+    val proxyService = ProxyService(CacheService(),httpClientProxy)
     routing {
         get("/api/suggest/address") {
             val parameters = call.parameters
