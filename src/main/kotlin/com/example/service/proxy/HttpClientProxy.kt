@@ -12,12 +12,8 @@ import io.ktor.http.*
  * Примечание: поскольку целевой сервис и так выдает данные в JSON, можно опустить конвертацию данных в "свой" json =)
  * */
 class HttpClientProxy : ProxyRequest<String> {
-    private var apiUrl: String = ""
     private val requestBuilder = HttpRequestBuilder()
-    /**
-     * Карта параметров
-     * */
-    private val parameters = mutableMapOf<String, MutableList<String>>()
+
     /**
      * Добавляет API ключ к запросу
      * Важно! Ключ добавлен просто строкой для упрощения кода!
@@ -34,11 +30,6 @@ class HttpClientProxy : ProxyRequest<String> {
      * */
     override fun addParameter(key: String, value: String) {
         requestBuilder.parameter(key, value)
-//        if (parameters[key] != null) {
-//            parameters[key]!!.add(value)
-//        } else {
-//            parameters[key] = mutableListOf(value)
-//        }
     }
 
     /**
@@ -47,7 +38,6 @@ class HttpClientProxy : ProxyRequest<String> {
      * */
     override fun url(url: String) {
         requestBuilder.url(url)
-//        apiUrl = url
     }
 
     /**
@@ -57,18 +47,6 @@ class HttpClientProxy : ProxyRequest<String> {
      * */
     override suspend fun get(): String {
         val response = client.get(requestBuilder)
-//        val response = client.get(apiUrl) {
-//            headers {
-//                append("Authorization", "Token APIKEY")
-//            }
-//            url {
-//                this@HttpClientProxy.parameters.forEach { param ->
-//                    param.value.forEach {
-//                        parameters.append(param.key, it)
-//                    }
-//                }
-//            }
-//        }
         println(response.bodyAsText())
 
         if (response.status != HttpStatusCode.OK) {
