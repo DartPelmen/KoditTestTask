@@ -11,8 +11,8 @@ class CacheService {
         val api = text(name = "api")
         val hash = text("hash")
         val answer = text("answer")
-
-        override val primaryKey = PrimaryKey(hash)
+        //связка API + hash  даст уникальную комбинацию для множества сервисов
+        override val primaryKey = PrimaryKey(hash, api)
     }
 
     init {
