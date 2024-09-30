@@ -6,6 +6,7 @@ import io.ktor.client.call.*
 import io.ktor.client.request.*
 import io.ktor.client.statement.*
 import io.ktor.http.*
+import io.ktor.util.reflect.*
 
 /**
  * Реализация прокси-клиента на основе Ktor Client.
@@ -13,6 +14,11 @@ import io.ktor.http.*
  * */
 class HttpClientProxy : ProxyRequest<String> {
     private val requestBuilder = HttpRequestBuilder()
+    init {
+        requestBuilder.headers{
+            append("Content-Type", "Application/Json")
+        }
+    }
 
     /**
      * Добавляет API ключ к запросу
@@ -31,6 +37,14 @@ class HttpClientProxy : ProxyRequest<String> {
     override fun addParameter(key: String, value: String) {
         requestBuilder.parameter(key, value)
     }
+    /**
+     * добавялет тело в формате json
+     * @param key имя параметра
+     * @param value значение параметра
+     * */
+    override fun body(value: String) {
+        requestBuilder.setBody(value)
+    }
 
     /**
      * задает целевой url
@@ -45,8 +59,8 @@ class HttpClientProxy : ProxyRequest<String> {
      * @return подсказки с целевого url
      * @throws InvalidStatusException если запрос не будет успешен (HTTP 200), получим искключение
      * */
-    override suspend fun get(): String {
-        val response = client.get(requestBuilder)
+    override suspend fun post(): String {
+        val response = client.post(requestBuilder)
         println(response.bodyAsText())
 
         if (response.status != HttpStatusCode.OK) {

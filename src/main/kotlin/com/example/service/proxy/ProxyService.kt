@@ -19,10 +19,11 @@ class ProxyService(
     /**
      * Выдает подсказки для заданных параметров запроса с заданного API. Найденные подсказки кэшируются в h2.
      * @param apiUrl адрес API
+     * @param body тело запроса в формате JSON
      * @param parameters параметры запроса
      * @return подсказки с API
      * */
-    suspend fun getSuggestions(apiUrl: String, parameters: Parameters): String? {
+    suspend fun getSuggestions(apiUrl: String, parameters: Parameters, body: String): String? {
         val parametersHash = HashByParametersGenerator.md5hash(parameters)
         cacheService.read(parametersHash)?.let {
             LOGGER.info("found in cache")
@@ -30,6 +31,8 @@ class ProxyService(
         }
         LOGGER.info("not found in cache")
         proxyRequest.url(apiUrl)
+        proxyRequest.body(body)
+
         parameters.forEach { key, values ->
             values.forEach {
                 proxyRequest.addParameter(key, it)
@@ -37,7 +40,7 @@ class ProxyService(
         }
         var answer: String? = null
         try {
-            answer = proxyRequest.get()
+            answer = proxyRequest.post()
             cacheService.create(CacheSchema(apiUrl,parametersHash, Json.encodeToString(answer)))
         } catch (e: InvalidStatusException){
             LOGGER.error(e)

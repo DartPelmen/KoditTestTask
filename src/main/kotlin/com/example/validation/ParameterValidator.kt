@@ -10,11 +10,9 @@ object ParameterValidator {
     /**
      * Внимание! Подробная проверка параметров опущена для упрощения понимания кода!
      * @param parameters параметры запроса для проверки
-     * @throws InvalidParametersException
+     * @return наличие параметра query среди параметров запроса
      * */
-    fun validate(parameters: Parameters) {
-        if (!parameters.contains("query")) {
-            throw InvalidParametersException("нет обязательного параметра query")
-        }
+    fun validate(parameters: Parameters):Boolean {
+        return parameters.contains("query")
     }
 }
